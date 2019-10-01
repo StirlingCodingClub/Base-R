@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+  <head>
+    <title>SCC: Some tips &amp; tricks using Base-R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Jeroen Minderman (jeroen.minderman2@stir.ac.uk)" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link rel="stylesheet" href="metropolis_jm.css" type="text/css" />
+    <link rel="stylesheet" href="metropolis_jm-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: top, left, title-slide
+
+# SCC: Some tips &amp; tricks using Base-R
+## with a focus on data manipulation
+### Jeroen Minderman (<a href="mailto:jeroen.minderman2@stir.ac.uk" class="email">jeroen.minderman2@stir.ac.uk</a>)
+### <br><br><br><br><br><br><br>26 September 2019 (<i>updated: 01/10/19</i>)
+
+---
+
+
+
+
+
+# "Base-R"
+
+## Wot now?
+
+https://stat.ethz.ch/R-manual/R-devel/library/base/DESCRIPTION
+
+```html
+Package: base  
+Version: 3.7.0  
+Priority: base  
+Title: The R Base Package  
+Author: R Core Team and contributors worldwide  
+Maintainer: R Core Team &lt;R-core@r-project.org&gt;  
+Description: Base R functions.  
+License: Part of R 3.7.0  
+Suggests: methods  
+Built: R 3.7.0; ; Mon Sep 23 01:12:01 UTC 2019; unix  
+```
+
+"Base-R": the R functionality you get on first installation, without any extra packages
+
+---
+
+# What *"extra packages"* be this?
+
+## Tonnes of options for data wrangling in R
+--
+![](https://s3-ap-south-1.amazonaws.com/av-blog-media/wp-content/uploads/2019/05/tidyverse-default.png)
+
+---
+class: inverse, center, middle
+
+![](https://media.giphy.com/media/gsSEDeDJvKRDq/source.gif)
+
+---
+
+# So why use Base-R?
+
+.left-column[
+]
+
+.right-column[
+{{content}}
+]
+
+--
+- You are a masochist
+
+![](https://media.giphy.com/media/YPjFIgSccMHS0/source.gif)
+---
+
+
+
+# So why use Base-R?
+
+.left-column[
+]
+
+.right-column[
+{{content}}
+]
+
+--
+- You are a masochist
+{{content}}
+--
+- You like to know the basics
+{{content}}
+--
+- You like to be flexible
+{{content}}
+--
+- Backwards "portability" (?)
+{{content}}
+--
+- You prefer "base R" coding style
+{{content}}
+--
+- **Not reliant on "third party" packages**  
+
+
+{{content}}
+--
+**Basically, it's a matter of ___preference___...  **
+
+{{content}}
+--
+*..but there are some advantages!*
+
+---
+
+
+
+# Session outline
+
+.left-column[
+]
+
+.right-column[
+{{content}}
+]
+--
+Just a few examples of handy functions for data wrangling in base-R...
+{{content}}
+--
+1. Matrices, dataframes, indexing (a *very brief* recap)
+{{content}}
+--
+2. Using *match()* to merge data frames
+{{content}}
+--
+3. Doing stuff with rows and columns: *apply()*
+{{content}}
+--
+4. Doing stuff with factors: *tapply()*
+{{content}}
+--
+5. Lists and doing stuff to them: *lapply()*
+{{content}}
+--
+6. ?   
+{{content}}
+
+**Health warning:** your mileage (and methods) may vary.  
+This is just one way, and one I like using.
+
+---
+
+#Matrices, dataframes, indexing (1)
+
+##"Row, Column"  
+
+- So, .content-box-red[`df1[i,j]`]  = row *i* and column *j* from data frame (or matrix) *df1*.
+- Leaving one of the indexes blank means return "all"
+
+.pull-left[
+
+
+
+```r
+df1
+```
+
+```
+##   c1 c2
+## 1  a  1
+## 2  b  2
+## 3  c  3
+```
+]
+
+.pull-right[
+
+```r
+df1[1,]
+```
+
+```
+##   c1 c2
+## 1  a  1
+```
+
+```r
+df1[,2]
+```
+
+```
+## [1] 1 2 3
+```
+]
+
+
+---
+
+#Matrices, dataframes, indexing (2)
+
+##Indexing works on both **matrices** and dataframes.  
+
+- Matrices are just tables of numbers 
+- So you can think of them of matrices in the mathematical sense
+
+.pull-left[
+
+
+```r
+mat1
+```
+
+```
+##      [,1] [,2]
+## [1,]    1    3
+## [2,]    2    4
+```
+
+```r
+mat1[1,]
+```
+
+```
+## [1] 1 3
+```
+]
+
+.pull-right[
+
+```r
+eigen(mat1)$values
+```
+
+```
+## [1]  5.3722813 -0.3722813
+```
+
+```r
+mat1[1,] %*% mat1[2,]
+```
+
+```
+##      [,1]
+## [1,]   14
+```
+]
+
+---
+
+#Matrices, dataframes, indexing (3)
+
+##Indexing works on both matrices and **dataframes**.  
+
+- Dataframes are matrices with a few more features
+- They (can) have descriptive row- and column names
+- They can have columns with different data types
+
+.pull-left[
+
+
+```r
+df2
+```
+
+```
+##      id measure
+## row1  A     1.1
+## row2  B     2.2
+## row3  C     3.3
+```
+
+```r
+df2[2,]
+```
+
+```
+##      id measure
+## row2  B     2.2
+```
+]
+
+.pull-right[
+Calculus doesn't (always) work...
+
+```r
+eigen(df2)
+```
+But you can express (numeric) dataframes as matrices or vice versa:
+
+```r
+df3 &lt;- as.data.frame(mat1)
+```
+]
+
+---
+
+#Matrices, dataframes, indexing (4)
+
+##Dataframes - indexing by column- or row names 
+
+.pull-left[
+
+```r
+df2
+```
+
+```
+##      id measure
+## row1  A     1.1
+## row2  B     2.2
+## row3  C     3.3
+```
+
+```r
+names(df2)
+```
+
+```
+## [1] "id"      "measure"
+```
+
+```r
+row.names(df2)
+```
+
+```
+## [1] "row1" "row2" "row3"
+```
+]
+
+.pull-right[
+
+```r
+df2[,2]
+df2$measure
+df2[,"measure"]
+```
+
+
+```
+## [1] 1.1 2.2 3.3
+```
+
+]
+
+---
+
+#Matrices, dataframes, indexing (5)
+
+##Dataframes - more uses of column/row names 
+
+.pull-left[
+
+```r
+df2
+```
+
+```
+##      id measure
+## row1  A     1.1
+## row2  B     2.2
+## row3  C     3.3
+```
+
+```r
+names(df2)
+```
+
+```
+## [1] "id"      "measure"
+```
+
+```r
+names(df2) &lt;- c("indiv","val")
+df2
+```
+
+```
+##      indiv val
+## row1     A 1.1
+## row2     B 2.2
+## row3     C 3.3
+```
+]
+
+.pull-right[
+**Adding a column**
+
+```r
+df2$newcol &lt;- c(7.0,7.3,7.9)
+df2
+```
+
+```
+##      indiv val newcol
+## row1     A 1.1    7.0
+## row2     B 2.2    7.3
+## row3     C 3.3    7.9
+```
+**Removing a column**:
+
+```r
+df2$val &lt;- NULL
+df2
+```
+
+```
+##      indiv newcol
+## row1     A    7.0
+## row2     B    7.3
+## row3     C    7.9
+```
+
+]
+
+---
+
+#Using _match()_ to merge data frames (1)
+
+##Now for something more interesting..!
+- `match()` matches values from one vector to values from another.
+- We can use this to "match up" data from one dataframe to another (equivalent of "merge" or "joins").
+
+.pull-left[
+
+```r
+df2
+```
+
+```
+##      indiv newcol
+## row1     A    7.0
+## row2     B    7.3
+## row3     C    7.9
+```
+]
+
+.pull-right[
+
+
+```r
+df3
+```
+
+```
+##   id multimeasure
+## 1  B           81
+## 2  B           87
+## 3  C           91
+## 4  C           93
+```
+]
+
+.content-box-red[
+We want to insert 'ncol' values for each 'indiv' from dataframe `df2` into dataframe `df3`, by individual identifier.
+]
+
+
+---
+
+#Using _match()_ to merge data frames (2)
+
+.pull-left[
+
+```r
+df3
+```
+
+```
+##   id multimeasure
+## 1  B           81
+## 2  B           87
+## 3  C           91
+## 4  C           93
+```
+]
+
+.pull-right[
+
+```r
+df2
+```
+
+```
+##      indiv newcol
+## row1     A    7.0
+## row2     B    7.3
+## row3     C    7.9
+```
+]
+
+--
+
+
+```r
+df3$newcol &lt;- df2$newcol[match(df3$id, df2$indiv)]
+```
+
+--
+
+.center[
+
+
+```r
+df3
+```
+
+```
+##   id multimeasure newcol
+## 1  B           81    7.3
+## 2  B           87    7.3
+## 3  C           91    7.9
+## 4  C           93    7.9
+```
+]
+
+---
+
+# Working with rows and columns: _apply()_ (1)
+The `apply()` function takes a dataframe/matrix and "applies" a function to one of its dimensions: rows, or columns.
+
+.center[
+
+```r
+df4
+```
+
+```
+##   col1 col2
+## 1  1.1  4.2
+## 2  2.1  5.2
+## 3  3.1  6.2
+```
+Rows, columns...
+]
+
+.pull-left[
+**Row means** (rows = 1)
+
+```r
+apply(df4, 1, mean)
+```
+
+```
+## [1] 2.65 3.65 4.65
+```
+]
+
+.pull-right[
+**Column medians** (row = 2)
+
+```r
+apply(df4, 2, median)
+```
+
+```
+## col1 col2 
+##  2.1  5.2
+```
+]
+
+---
+
+# Working with rows and columns: _apply()_ (2)
+
+`apply()` works with custom functions, too!
+
+.pull-left[
+
+```r
+df4[2,2] &lt;- NA
+df4
+```
+
+```
+##   col1 col2
+## 1  1.1  4.2
+## 2  2.1   NA
+## 3  3.1  6.2
+```
+
+```r
+apply(df4, 2, mean)
+```
+
+```
+## col1 col2 
+##  2.1   NA
+```
+]
+
+.pull-right[
+
+```r
+mean_no_na &lt;- function(x) {
+  return(mean(x, na.rm=T))
+}
+
+apply(df4, 2, mean_no_na)
+```
+
+```
+## col1 col2 
+##  2.1  5.2
+```
+
+]
+
+---
+
+# Working with factors: _tapply()_ (1)
+
+- `tapply()` is similar to apply() but can apply a function to a vector while subsetting using another vector  
+- This is useful for calculating group means, for example.
+
+.pull-left[
+
+```r
+df3
+```
+
+```
+##   id multimeasure newcol
+## 1  B           81    7.3
+## 2  B           87    7.3
+## 3  C           91    7.9
+## 4  C           93    7.9
+```
+]
+
+.pull-right[
+
+```r
+df3$id
+```
+
+```
+## [1] B B C C
+## Levels: B C
+```
+]
+
+.center[
+
+```r
+tapply(df3$multimeasure, df3$id, mean)
+```
+
+```
+##  B  C 
+## 84 92
+```
+]
+
+---
+
+# Working with factors: _tapply()_ (2)
+
+- What if we want to add the individual means to the table?
+- One option is to use `tapply()` to both calculate both means and the number of measures per group (using `length()`)
+- Then use `rep()` to create a new column
+
+
+```r
+id_means &lt;- tapply(df3$multimeasure, df3$id, mean)
+id_obs &lt;- tapply(df3$multimeasure, df3$id, length)
+```
+.left-column[
+
+```r
+id_means
+```
+
+```
+##  B  C 
+## 84 92
+```
+
+```r
+id_obs
+```
+
+```
+## B C 
+## 2 2
+```
+]
+
+.right-column[
+
+```r
+means_col &lt;- rep(id_means, id_obs)
+df3$means_col &lt;- means_col
+df3
+```
+
+```
+##   id multimeasure newcol means_col
+## 1  B           81    7.3        84
+## 2  B           87    7.3        84
+## 3  C           91    7.9        92
+## 4  C           93    7.9        92
+```
+]
+
+---
+
+# Working with lists: _lapply()_ (1)
+
+- Lists are collections of other objects, e.g. matrices or dataframes.
+- They are convenient in e.g. working with more than "two dimensions"
+
+
+
+
+```r
+mylist &lt;- list(df2, df3)
+mylist
+```
+
+```
+## [[1]]
+##      id  c2
+## row1  A 7.0
+## row2  B 7.3
+## row3  C 7.9
+## 
+## [[2]]
+##   id c1  c2 c3
+## 1  B 81 7.3 84
+## 2  B 87 7.3 84
+## 3  C 91 7.9 92
+## 4  C 93 7.9 92
+```
+
+---
+
+# Working with lists: _lapply()_ (2)
+
+- They can be indexed in the same way as matrices/DF's, but using double square brackets`[[i]]`
+
+.pull-left[
+
+```r
+mylist[[1]]
+```
+
+```
+##      id  c2
+## row1  A 7.0
+## row2  B 7.3
+## row3  C 7.9
+```
+
+```r
+mylist[[1]][1,]
+```
+
+```
+##      id c2
+## row1  A  7
+```
+]
+.pull-right[
+
+```r
+mylist[[2]]
+```
+
+```
+##   id c1  c2 c3
+## 1  B 81 7.3 84
+## 2  B 87 7.3 84
+## 3  C 91 7.9 92
+## 4  C 93 7.9 92
+```
+
+```r
+mylist[[2]][,1]
+```
+
+```
+## [1] B B C C
+## Levels: B C
+```
+]
+
+---
+
+# Working with lists: _lapply()_ (3)
+
+- Lists can also be named
+
+
+```r
+names(mylist) &lt;- c("element1", "element2")
+```
+
+.pull-left[
+
+```r
+mylist
+```
+
+```
+## $element1
+##      id  c2
+## row1  A 7.0
+## row2  B 7.3
+## row3  C 7.9
+## 
+## $element2
+##   id c1  c2 c3
+## 1  B 81 7.3 84
+## 2  B 87 7.3 84
+## 3  C 91 7.9 92
+## 4  C 93 7.9 92
+```
+]
+
+.pull-right[
+
+```r
+mylist[[2]]
+mylist[["element2"]]
+```
+
+```r
+mylist$element2
+```
+
+```
+##   id c1  c2 c3
+## 1  B 81 7.3 84
+## 2  B 87 7.3 84
+## 3  C 91 7.9 92
+## 4  C 93 7.9 92
+```
+]
+
+---
+# Working with lists: _lapply()_ (4)
+
+- Finally, `lapply()` can be used to apply functions to (elements of) lists.
+- Only two arguments, the name of the list and the function to apply.
+- Simple example, find the column names (`names(`) for each list element:
+
+
+```r
+lapply(mylist, names)
+```
+
+```
+## $element1
+## [1] "id" "c2"
+## 
+## $element2
+## [1] "id" "c1" "c2" "c3"
+```
+---
+# Working with lists: _lapply()_ (5)
+
+This is far more interesting when using custom functions.
+For example, calculate the mean for column `c2` in each list element:
+
+.pull-left[
+
+```r
+mylist
+```
+
+```
+## $element1
+##      id  c2
+## row1  A 7.0
+## row2  B 7.3
+## row3  C 7.9
+## 
+## $element2
+##   id c1  c2 c3
+## 1  B 81 7.3 84
+## 2  B 87 7.3 84
+## 3  C 91 7.9 92
+## 4  C 93 7.9 92
+```
+]
+
+
+.pull-right[
+
+```r
+c2_mean &lt;- function(x) {
+  return(mean(x$c2))
+}
+
+lapply(mylist, c2_mean)
+```
+
+```
+## $element1
+## [1] 7.4
+## 
+## $element2
+## [1] 7.6
+```
+]
+
+
+---
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,556 @@
+---
+title: "SCC: Some tips & tricks using Base-R"
+subtitle: "with a focus on data manipulation"
+author: "Jeroen Minderman (jeroen.minderman2@stir.ac.uk)"
+date: "<br><br><br><br><br><br><br>26 September 2019 (<i>updated: `r format(Sys.Date(),'%d/%m/%y')`</i>)"
+output:
+  xaringan::moon_reader:
+    css: ["default", "metropolis_jm.css", "metropolis_jm-fonts.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: [top, left]
+---
+
+
+``` {r echo=FALSE}
+library(knitr)
+```
+
+# "Base-R"
+
+## Wot now?
+
+https://stat.ethz.ch/R-manual/R-devel/library/base/DESCRIPTION
+
+```html
+Package: base  
+Version: 3.7.0  
+Priority: base  
+Title: The R Base Package  
+Author: R Core Team and contributors worldwide  
+Maintainer: R Core Team <R-core@r-project.org>  
+Description: Base R functions.  
+License: Part of R 3.7.0  
+Suggests: methods  
+Built: R 3.7.0; ; Mon Sep 23 01:12:01 UTC 2019; unix  
+```
+
+"Base-R": the R functionality you get on first installation, without any extra packages
+
+---
+
+# What *"extra packages"* be this?
+
+## Tonnes of options for data wrangling in R
+--
+![](https://s3-ap-south-1.amazonaws.com/av-blog-media/wp-content/uploads/2019/05/tidyverse-default.png)
+
+---
+class: inverse, center, middle
+
+![](https://media.giphy.com/media/gsSEDeDJvKRDq/source.gif)
+
+---
+
+# So why use Base-R?
+
+.left-column[
+]
+
+.right-column[
+{{content}}
+]
+
+--
+- You are a masochist
+
+![](https://media.giphy.com/media/YPjFIgSccMHS0/source.gif)
+---
+
+
+
+# So why use Base-R?
+
+.left-column[
+]
+
+.right-column[
+{{content}}
+]
+
+--
+- You are a masochist
+{{content}}
+--
+- You like to know the basics
+{{content}}
+--
+- You like to be flexible
+{{content}}
+--
+- Backwards "portability" (?)
+{{content}}
+--
+- You prefer "base R" coding style
+{{content}}
+--
+- **Not reliant on "third party" packages**  
+
+
+{{content}}
+--
+**Basically, it's a matter of ___preference___...  **
+
+{{content}}
+--
+*..but there are some advantages!*
+
+---
+
+
+
+# Session outline
+
+.left-column[
+]
+
+.right-column[
+{{content}}
+]
+--
+Just a few examples of handy functions for data wrangling in base-R...
+{{content}}
+--
+1. Matrices, dataframes, indexing (a *very brief* recap)
+{{content}}
+--
+2. Using *match()* to merge data frames
+{{content}}
+--
+3. Doing stuff with rows and columns: *apply()*
+{{content}}
+--
+4. Doing stuff with factors: *tapply()*
+{{content}}
+--
+5. Lists and doing stuff to them: *lapply()*
+{{content}}
+--
+6. ?   
+{{content}}
+
+**Health warning:** your mileage (and methods) may vary.  
+This is just one way, and one I like using.
+
+---
+
+#Matrices, dataframes, indexing (1)
+
+##"Row, Column"  
+
+- So, .content-box-red[`df1[i,j]`]  = row *i* and column *j* from data frame (or matrix) *df1*.
+- Leaving one of the indexes blank means return "all"
+
+.pull-left[
+
+```{r echo=F}
+df1 <- data.frame(c1=c("a","b","c"),c2=c(1,2,3))
+```
+```{r}
+df1
+```
+]
+
+.pull-right[
+```{r}
+df1[1,]
+```
+```{r}
+df1[,2]
+```
+]
+
+
+---
+
+#Matrices, dataframes, indexing (2)
+
+##Indexing works on both **matrices** and dataframes.  
+
+- Matrices are just tables of numbers 
+- So you can think of them of matrices in the mathematical sense
+
+.pull-left[
+```{r echo=F}
+mat1 <- matrix(c(1,2,3,4), nrow=2, ncol = 2)
+```
+```{r}
+mat1
+mat1[1,]
+```
+]
+
+.pull-right[
+```{r}
+eigen(mat1)$values
+mat1[1,] %*% mat1[2,]
+```
+]
+
+---
+
+#Matrices, dataframes, indexing (3)
+
+##Indexing works on both matrices and **dataframes**.  
+
+- Dataframes are matrices with a few more features
+- They (can) have descriptive row- and column names
+- They can have columns with different data types
+
+.pull-left[
+```{r echo=F}
+df2 <- data.frame(id=c("A","B","C"), measure = c(1.1,2.2,3.3))
+row.names(df2) <- c("row1","row2","row3") 
+```
+```{r}
+df2
+df2[2,]
+```
+]
+
+.pull-right[
+Calculus doesn't (always) work...
+```{r eval=F}
+eigen(df2)
+```
+But you can express (numeric) dataframes as matrices or vice versa:
+```{r}
+df3 <- as.data.frame(mat1)
+```
+]
+
+---
+
+#Matrices, dataframes, indexing (4)
+
+##Dataframes - indexing by column- or row names 
+
+.pull-left[
+```{r}
+df2
+names(df2)
+row.names(df2)
+```
+]
+
+.pull-right[
+```{r, eval=F}
+df2[,2]
+df2$measure
+df2[,"measure"]
+```
+
+```{r, echo=F}
+df2[,2]
+```
+
+]
+
+---
+
+#Matrices, dataframes, indexing (5)
+
+##Dataframes - more uses of column/row names 
+
+.pull-left[
+```{r}
+df2
+names(df2)
+names(df2) <- c("indiv","val")
+df2
+```
+]
+
+.pull-right[
+**Adding a column**
+```{r}
+df2$newcol <- c(7.0,7.3,7.9)
+df2
+```
+**Removing a column**:
+```{r}
+df2$val <- NULL
+df2
+```
+
+]
+
+---
+
+#Using _match()_ to merge data frames (1)
+
+##Now for something more interesting..!
+- `match()` matches values from one vector to values from another.
+- We can use this to "match up" data from one dataframe to another (equivalent of "merge" or "joins").
+
+.pull-left[
+```{r}
+df2
+```
+]
+
+.pull-right[
+```{r, echo=F}
+df3 <- data.frame(id = c("B","B","C","C"), multimeasure = c(81,87,91,93))
+```
+```{r}
+df3
+```
+]
+
+.content-box-red[
+We want to insert 'ncol' values for each 'indiv' from dataframe `df2` into dataframe `df3`, by individual identifier.
+]
+
+
+---
+
+#Using _match()_ to merge data frames (2)
+
+.pull-left[
+```{r}
+df3
+```
+]
+
+.pull-right[
+```{r}
+df2
+```
+]
+
+--
+
+```{r, eval=F}
+df3$newcol <- df2$newcol[match(df3$id, df2$indiv)]
+```
+
+--
+
+.center[
+```{r, echo=F}
+df3$newcol <- df2$newcol[match(df3$id, df2$indiv)]
+```
+```{r}
+df3
+```
+]
+
+---
+
+# Working with rows and columns: _apply()_ (1)
+The `apply()` function takes a dataframe/matrix and "applies" a function to one of its dimensions: rows, or columns.
+```{r echo=F}
+df4 <- data.frame(col1 = c(1.1,2.1,3.1), col2 = c(4.2,5.2,6.2))
+```
+.center[
+```{r}
+df4
+```
+Rows, columns...
+]
+
+.pull-left[
+**Row means** (rows = 1)
+```{r}
+apply(df4, 1, mean)
+```
+]
+
+.pull-right[
+**Column medians** (row = 2)
+```{r}
+apply(df4, 2, median)
+```
+]
+
+---
+
+# Working with rows and columns: _apply()_ (2)
+
+`apply()` works with custom functions, too!
+
+.pull-left[
+```{r}
+df4[2,2] <- NA
+df4
+```
+```{r}
+apply(df4, 2, mean)
+```
+]
+
+.pull-right[
+```{r}
+mean_no_na <- function(x) {
+  return(mean(x, na.rm=T))
+}
+
+apply(df4, 2, mean_no_na)
+```
+
+]
+
+---
+
+# Working with factors: _tapply()_ (1)
+
+- `tapply()` is similar to apply() but can apply a function to a vector while subsetting using another vector  
+- This is useful for calculating group means, for example.
+
+.pull-left[
+```{r}
+df3
+```
+]
+
+.pull-right[
+```{r}
+df3$id
+```
+]
+
+.center[
+```{r}
+tapply(df3$multimeasure, df3$id, mean)
+```
+]
+
+---
+
+# Working with factors: _tapply()_ (2)
+
+- What if we want to add the individual means to the table?
+- One option is to use `tapply()` to both calculate both means and the number of measures per group (using `length()`)
+- Then use `rep()` to create a new column
+
+```{r}
+id_means <- tapply(df3$multimeasure, df3$id, mean)
+id_obs <- tapply(df3$multimeasure, df3$id, length)
+```
+.left-column[
+```{r}
+id_means
+id_obs
+```
+]
+
+.right-column[
+```{r}
+means_col <- rep(id_means, id_obs)
+df3$means_col <- means_col
+df3
+```
+]
+
+---
+
+# Working with lists: _lapply()_ (1)
+
+- Lists are collections of other objects, e.g. matrices or dataframes.
+- They are convenient in e.g. working with more than "two dimensions"
+
+```{r, echo=F}
+names(df2) <- c("id","c2")
+names(df3) <- c("id","c1","c2","c3")
+```
+
+```{r}
+mylist <- list(df2, df3)
+mylist
+```
+
+---
+
+# Working with lists: _lapply()_ (2)
+
+- They can be indexed in the same way as matrices/DF's, but using double square brackets`[[i]]`
+
+.pull-left[
+```{r}
+mylist[[1]]
+mylist[[1]][1,]
+```
+]
+.pull-right[
+```{r}
+mylist[[2]]
+mylist[[2]][,1]
+```
+]
+
+---
+
+# Working with lists: _lapply()_ (3)
+
+- Lists can also be named
+
+```{r}
+names(mylist) <- c("element1", "element2")
+```
+
+.pull-left[
+```{r}
+mylist
+```
+]
+
+.pull-right[
+```{r, eval=F}
+mylist[[2]]
+mylist[["element2"]]
+```
+```{r}
+mylist$element2
+```
+]
+
+---
+# Working with lists: _lapply()_ (4)
+
+- Finally, `lapply()` can be used to apply functions to (elements of) lists.
+- Only two arguments, the name of the list and the function to apply.
+- Simple example, find the column names (`names(`) for each list element:
+
+```{r}
+lapply(mylist, names)
+```
+---
+# Working with lists: _lapply()_ (5)
+
+This is far more interesting when using custom functions.
+For example, calculate the mean for column `c2` in each list element:
+
+.pull-left[
+```{r}
+mylist
+```
+]
+
+
+.pull-right[
+```{r}
+c2_mean <- function(x) {
+  return(mean(x$c2))
+}
+
+lapply(mylist, c2_mean)
+```
+]
+
+
+---
+
