@@ -1,4 +1,6 @@
-# Base-R
+# Stirling Coding Club
+## Some tips & tricks using Base-R
+### with a focus on data manipulation
 
 A very short overview of what I'm hoping to talk about for this wednesday's Coding Club session.  
 This will be very much an "introductory" session - in the sense that to make a point, I will be going through some of the basics of "data wrangling" in R. So be warned, it may be a little "too" basic for some of you!  
