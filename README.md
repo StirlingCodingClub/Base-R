@@ -15,4 +15,4 @@ I'll cover the following -
 
 The presentation for the session can be viewed [here](https://stirlingcodingclub.github.io/Base-R/BaseRTipsandTricks.html#1).  
   
-The practice "excercises" and links to toy data sets can be found [here]().
+The practice "excercises" and links to toy data sets can be found [here](https://stirlingcodingclub.github.io/Base-R/Base-R-practice.html).
