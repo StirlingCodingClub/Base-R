@@ -13,6 +13,6 @@ I'll cover the following -
 5. Lists and doing "stuff" with them: using lapply()  
 6. I hope that the above will be really pretty quick so I am very happy to make up any remaining time with a bit of an "open" data wrangling session/discussion; I'll prepare a view toy data sets to play with.  
 
-The presentation for the session can be viewed here.  
+The presentation for the session can be viewed [here](https://stirlingcodingclub.github.io/Base-R/BaseRTipsandTricks.html#1).  
   
-The practice "excercises" and links to toy data sets can be found here.
+The practice "excercises" and links to toy data sets can be found [here]().
