@@ -12,14 +12,37 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## 1. Practice dataset 1
 
-The file `greti.csv` in the Github repository contains biometric data of 101 individual birds.
+The file [`greti.csv` in the Github repository](https://github.com/StirlingCodingClub/Base-R/blob/master/greti.csv) contains biometric data of 101 individual birds.
 
 1. Load this file into R as a dataframe.  
 2. Examine the data (e.g. using `summary()`, `str()`, `names()`).  
 3. Calculate some summary statistics (e.g. a mean or SD) for male and female individuals (column "SEX"), for both body weights (WT) and wing length (WING).  
 4. Add the mean for males and females as a new column to the data frame.  
 
-### Solutions
+  
+## 2. Practice datasets 2 & 3
+
+The files [`cc_age.csv`](https://github.com/StirlingCodingClub/Base-R/blob/master/cc_age.csv) and [`cc_wing.csv`](https://github.com/StirlingCodingClub/Base-R/blob/master/cc_wing.csv) contain different biometric data of the same individuals, but in two separate tables.
+
+1. Load these files into separate data frames.  
+2. Create a new data frame that contains all the biometric data in a single table    
+(hint: be careful. Do all individuals occur in each table, and why is that important?)  
+3. Calculate the mean wing length for each age category.  
+
+  
+## 3. Practice datasets 4
+
+The file [`birdlist.Rdata`](https://github.com/StirlingCodingClub/Base-R/blob/master/birdlist.Rdata) in the github repository contains more bird biometric data.  
+
+1. Load this file.  
+2. Examine the data. Note that this is not a simple dataframe. Each element represents a different species.  
+3. Calculate the mean of wing lengths for each species.  
+4. Calculate the mean wing length for each age class for each species.  
+
+  
+
+    
+## Solutions - Practice dataset 1
 
 ```{r}
 dat <- read.csv('greti.csv', header=T)
@@ -60,17 +83,10 @@ dat$sex_wing_mean <- sex_wing_mean[,1][match(dat$SEX, row.names(sex_wing_mean))]
 dat$sex_wt_mean <- sex_wt_mean[,1][match(dat$SEX, row.names(sex_wt_mean))]
 ```
 
-
-## 2. Practice datasets 2 & 3
-
-The files `cc_age.csv` and `cc_wing.csv` contain different biometric data of the same individuals, but in two separate tables.
-
-1. Load these files into separate data frames.  
-2. Create a new data frame that contains all the biometric data in a single table    
-(hint: be careful. Do all individuals occur in each table, and why is that important?)  
-3. Calculate the mean wing length for each age category.  
-
-# Solutions
+  
+  
+  
+## Solutions - Practice datasets 2 & 3
 
 ```{r}
 cc_age <- read.csv("cc_age.csv", header=T)
@@ -95,14 +111,10 @@ Instead of explicitly using the function we defined for this, we can also do thi
 tapply(cc_age$wing, cc_age$age, function(x) mean(x, na.rm=T))
 ```
 
-## 3. Practice datasets 4
-
-The file `birdlist.Rdata` in the github repository contains more bird biometric data.  
-
-1. Load this file.  
-2. Examine the data. Note that this is not a simple dataframe. Each element represents a different species.  
-3. Calculate the mean of wing lengths for each species.  
-4. Calculate the mean wing length for each age class for each species.  
+   
+  
+  
+## Solutions - practice dataset 4
 
 ```{r}
 load("birdlist.Rdata")
@@ -125,3 +137,4 @@ We now apply this custom function to the list by doing:
 ```{r}
 lapply(birdlist, age_means)
 ```
+

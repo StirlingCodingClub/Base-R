@@ -372,7 +372,7 @@ summary {
 
 <div id="practice-dataset-1" class="section level2">
 <h2>1. Practice dataset 1</h2>
-<p>The file <code>greti.csv</code> in the Github repository contains biometric data of 101 individual birds.</p>
+<p>The file <a href="https://github.com/StirlingCodingClub/Base-R/blob/master/greti.csv"><code>greti.csv</code> in the Github repository</a> contains biometric data of 101 individual birds.</p>
 <ol style="list-style-type: decimal">
 <li>Load this file into R as a dataframe.<br />
 </li>
@@ -382,8 +382,34 @@ summary {
 </li>
 <li>Add the mean for males and females as a new column to the data frame.</li>
 </ol>
-<div id="solutions" class="section level3">
-<h3>Solutions</h3>
+</div>
+<div id="practice-datasets-2-3" class="section level2">
+<h2>2. Practice datasets 2 &amp; 3</h2>
+<p>The files <a href="https://github.com/StirlingCodingClub/Base-R/blob/master/cc_age.csv"><code>cc_age.csv</code></a> and <a href="https://github.com/StirlingCodingClub/Base-R/blob/master/cc_wing.csv"><code>cc_wing.csv</code></a> contain different biometric data of the same individuals, but in two separate tables.</p>
+<ol style="list-style-type: decimal">
+<li>Load these files into separate data frames.<br />
+</li>
+<li>Create a new data frame that contains all the biometric data in a single table<br />
+(hint: be careful. Do all individuals occur in each table, and why is that important?)<br />
+</li>
+<li>Calculate the mean wing length for each age category.</li>
+</ol>
+</div>
+<div id="practice-datasets-4" class="section level2">
+<h2>3. Practice datasets 4</h2>
+<p>The file <a href="https://github.com/StirlingCodingClub/Base-R/blob/master/birdlist.Rdata"><code>birdlist.Rdata</code></a> in the github repository contains more bird biometric data.</p>
+<ol style="list-style-type: decimal">
+<li>Load this file.<br />
+</li>
+<li>Examine the data. Note that this is not a simple dataframe. Each element represents a different species.<br />
+</li>
+<li>Calculate the mean of wing lengths for each species.<br />
+</li>
+<li>Calculate the mean wing length for each age class for each species.</li>
+</ol>
+</div>
+<div id="solutions---practice-dataset-1" class="section level2">
+<h2>Solutions - Practice dataset 1</h2>
 <pre class="r"><code>dat &lt;- read.csv('greti.csv', header=T)
 head(dat)</code></pre>
 <pre><code>##      RING  SPEC SEX WING   WT
@@ -434,21 +460,8 @@ sex_wt_mean &lt;- as.data.frame(sex_wt_mean)</code></pre>
 <pre class="r"><code>dat$sex_wing_mean &lt;- sex_wing_mean[,1][match(dat$SEX, row.names(sex_wing_mean))]
 dat$sex_wt_mean &lt;- sex_wt_mean[,1][match(dat$SEX, row.names(sex_wt_mean))]</code></pre>
 </div>
-</div>
-<div id="practice-datasets-2-3" class="section level2">
-<h2>2. Practice datasets 2 &amp; 3</h2>
-<p>The files <code>cc_age.csv</code> and <code>cc_wing.csv</code> contain different biometric data of the same individuals, but in two separate tables.</p>
-<ol style="list-style-type: decimal">
-<li>Load these files into separate data frames.<br />
-</li>
-<li>Create a new data frame that contains all the biometric data in a single table<br />
-(hint: be careful. Do all individuals occur in each table, and why is that important?)<br />
-</li>
-<li>Calculate the mean wing length for each age category.</li>
-</ol>
-</div>
-<div id="solutions-1" class="section level1">
-<h1>Solutions</h1>
+<div id="solutions---practice-datasets-2-3" class="section level2">
+<h2>Solutions - Practice datasets 2 &amp; 3</h2>
 <pre class="r"><code>cc_age &lt;- read.csv(&quot;cc_age.csv&quot;, header=T)
 cc_wing &lt;- read.csv(&quot;cc_wing.csv&quot;, header=T)</code></pre>
 <p>We can examine the data sets by using e.g. <code>str()</code>. This gives us, among other things how many “levels” there are in the variable ring_no, which indicates the different individuals. Note that there are fewer individuals in <code>cc_wing</code> table. This means that we should match the <code>cc_wing</code> data into the <code>cc_age</code> table; if we do it the other way around we will lose some of the individuals for which we have age data but no wing lengths.</p>
@@ -469,18 +482,9 @@ head(cc_age)</code></pre>
 <pre class="r"><code>tapply(cc_age$wing, cc_age$age, function(x) mean(x, na.rm=T))</code></pre>
 <pre><code>##        3       3J        4 
 ## 60.56000 60.22727 58.75000</code></pre>
-<div id="practice-datasets-4" class="section level2">
-<h2>3. Practice datasets 4</h2>
-<p>The file <code>birdlist.Rdata</code> in the github repository contains more bird biometric data.</p>
-<ol style="list-style-type: decimal">
-<li>Load this file.<br />
-</li>
-<li>Examine the data. Note that this is not a simple dataframe. Each element represents a different species.<br />
-</li>
-<li>Calculate the mean of wing lengths for each species.<br />
-</li>
-<li>Calculate the mean wing length for each age class for each species.</li>
-</ol>
+</div>
+<div id="solutions---practice-dataset-4" class="section level2">
+<h2>Solutions - practice dataset 4</h2>
 <pre class="r"><code>load(&quot;birdlist.Rdata&quot;)
 str(birdlist)</code></pre>
 <pre><code>## List of 2
@@ -512,7 +516,6 @@ str(birdlist)</code></pre>
 ## $ww
 ##        3       3J        4 
 ## 65.27500 65.09091 66.03125</code></pre>
-</div>
 </div>
 
 
