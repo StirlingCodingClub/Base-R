@@ -1,0 +1,127 @@
+---
+title: "Stirling Coding Club - BaseR - Practice"
+author: "Jeroen Minderman"
+date: "01/10/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+## 1. Practice dataset 1
+
+The file `greti.csv` in the Github repository contains biometric data of 101 individual birds.
+
+1. Load this file into R as a dataframe.  
+2. Examine the data (e.g. using `summary()`, `str()`, `names()`).  
+3. Calculate some summary statistics (e.g. a mean or SD) for male and female individuals (column "SEX"), for both body weights (WT) and wing length (WING).  
+4. Add the mean for males and females as a new column to the data frame.  
+
+### Solutions
+
+```{r}
+dat <- read.csv('greti.csv', header=T)
+head(dat)
+str(dat)
+summary(dat)
+sex_wt_mean <- tapply(dat$WT, dat$SEX, mean)
+sex_wt_mean
+```
+There are missing values in the wing length column WING (NAs). So "just" calculating a mean does not work:
+```{r}
+sex_wing_mean <- tapply(dat$WING, dat$SEX, mean)
+sex_wing_mean
+```
+To avoid this, we can use a custom "mean" function that ignores the NA's:
+```{r}
+mean_no_na <- function(x) {
+  return(mean(x, na.rm=T))
+}
+```
+And now we can use `tapply()` to calculate the means using this function:
+```{r}
+sex_wing_mean <- tapply(dat$WING, dat$SEX, mean_no_na)
+sex_wing_mean
+```
+One way to do this is to use `match()` to match data for each sex (the wing and weight means) to each sex in the `dat` table.
+To be able to do this, we first want to express `sex_wing_mean` and `sex_wt_mean` as dataframes.
+```{r}
+sex_wing_mean <- as.data.frame(sex_wing_mean)
+sex_wt_mean <- as.data.frame(sex_wt_mean)
+```
+We can now do a `match()` for each individual bit of data, creating a new column for each. 
+Two important things to note here.
+First, we have to make sure we refer to the "first" and only column in each of the "means" tables.
+Second, when using the match, we have no explicit "sex" column in each of the "means" tables. In this cases, the code for each sex is the row name in the tables. So we need to refer to this in the match using the `row.names()` function.
+```{r}
+dat$sex_wing_mean <- sex_wing_mean[,1][match(dat$SEX, row.names(sex_wing_mean))]
+dat$sex_wt_mean <- sex_wt_mean[,1][match(dat$SEX, row.names(sex_wt_mean))]
+```
+
+
+## 2. Practice datasets 2 & 3
+
+The files `cc_age.csv` and `cc_wing.csv` contain different biometric data of the same individuals, but in two separate tables.
+
+1. Load these files into separate data frames.  
+2. Create a new data frame that contains all the biometric data in a single table    
+(hint: be careful. Do all individuals occur in each table, and why is that important?)  
+3. Calculate the mean wing length for each age category.  
+
+# Solutions
+
+```{r}
+cc_age <- read.csv("cc_age.csv", header=T)
+cc_wing <- read.csv("cc_wing.csv", header=T)
+```
+
+We can examine the data sets by using e.g. `str()`. This gives us, among other things how many "levels" there are in the variable ring_no, which indicates the different individuals.
+Note that there are fewer individuals in `cc_wing` table.
+This means that we should match the `cc_wing` data into the `cc_age` table; if we do it the other way around we will lose some of the individuals for which we have age data but no wing lengths.
+
+```{r}
+cc_age$wing <- cc_wing$wing_length[match(cc_age$ring_no, cc_wing$ring_no)]
+head(cc_age)
+```
+We can now use the data in the new column to calculate the mean wing length for each age category.
+Again, there are missing values in the wing length data so we again need to "ignore" these when calculating the mean.
+```{r}
+tapply(cc_age$wing, cc_age$age, mean)
+```
+Instead of explicitly using the function we defined for this, we can also do this quickly in a single line (without creating an explicit function first). This is a bit less easy to read, but it does exactly the same thing:
+```{r}
+tapply(cc_age$wing, cc_age$age, function(x) mean(x, na.rm=T))
+```
+
+## 3. Practice datasets 4
+
+The file `birdlist.Rdata` in the github repository contains more bird biometric data.  
+
+1. Load this file.  
+2. Examine the data. Note that this is not a simple dataframe. Each element represents a different species.  
+3. Calculate the mean of wing lengths for each species.  
+4. Calculate the mean wing length for each age class for each species.  
+
+```{r}
+load("birdlist.Rdata")
+str(birdlist)
+```
+So this is a list of two dataframes.
+We can calculate the mean for one of the columns in each dataframe using lapply.
+Note we have to make sure to ignore any missing values!
+```{r}
+lapply(birdlist, function(x) mean(x$wing_length, na.rm=T))
+```
+We can do more complex operations by creating our own custom function.
+In this case, the function calculates the mean wing length for each age class, in each list element (i.e. for each species).
+```{r}
+age_means <- function(x) {
+  tapply(x$wing_length, x$age, function(x) mean(x, na.rm=T))
+}
+```
+We now apply this custom function to the list by doing:
+```{r}
+lapply(birdlist, age_means)
+```
