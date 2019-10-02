@@ -163,7 +163,7 @@ df1 <- data.frame(c1=c("a","b","c"),c2=c(1,2,3))
 df1
 ```
 ]
-
+--
 .pull-right[
 ```{r}
 df1[1,]
@@ -192,7 +192,7 @@ mat1
 mat1[1,]
 ```
 ]
-
+--
 .pull-right[
 ```{r}
 eigen(mat1)$values
@@ -220,7 +220,7 @@ df2
 df2[2,]
 ```
 ]
-
+--
 .pull-right[
 Calculus doesn't (always) work...
 ```{r eval=F}
@@ -245,7 +245,7 @@ names(df2)
 row.names(df2)
 ```
 ]
-
+--
 .pull-right[
 ```{r, eval=F}
 df2[,2]
@@ -273,7 +273,7 @@ names(df2) <- c("indiv","val")
 df2
 ```
 ]
-
+--
 .pull-right[
 **Adding a column**
 ```{r}
@@ -301,7 +301,7 @@ df2
 df2
 ```
 ]
-
+--
 .pull-right[
 ```{r, echo=F}
 df3 <- data.frame(id = c("B","B","C","C"), multimeasure = c(81,87,91,93))
@@ -362,14 +362,14 @@ df4
 ```
 Rows, columns...
 ]
-
+--
 .pull-left[
 **Row means** (rows = 1)
 ```{r}
 apply(df4, 1, mean)
 ```
 ]
-
+--
 .pull-right[
 **Column medians** (row = 2)
 ```{r}
@@ -392,7 +392,7 @@ df4
 apply(df4, 2, mean)
 ```
 ]
-
+--
 .pull-right[
 ```{r}
 mean_no_na <- function(x) {
@@ -416,13 +416,13 @@ apply(df4, 2, mean_no_na)
 df3
 ```
 ]
-
+--
 .pull-right[
 ```{r}
 df3$id
 ```
 ]
-
+--
 .center[
 ```{r}
 tapply(df3$multimeasure, df3$id, mean)
@@ -441,13 +441,14 @@ tapply(df3$multimeasure, df3$id, mean)
 id_means <- tapply(df3$multimeasure, df3$id, mean)
 id_obs <- tapply(df3$multimeasure, df3$id, length)
 ```
+--
 .left-column[
 ```{r}
 id_means
 id_obs
 ```
 ]
-
+--
 .right-column[
 ```{r}
 means_col <- rep(id_means, id_obs)
@@ -485,6 +486,7 @@ mylist[[1]]
 mylist[[1]][1,]
 ```
 ]
+--
 .pull-right[
 ```{r}
 mylist[[2]]
@@ -507,7 +509,7 @@ names(mylist) <- c("element1", "element2")
 mylist
 ```
 ]
-
+--
 .pull-right[
 ```{r, eval=F}
 mylist[[2]]
@@ -540,7 +542,7 @@ mylist
 ```
 ]
 
-
+--
 .pull-right[
 ```{r}
 c2_mean <- function(x) {
@@ -553,6 +555,10 @@ lapply(mylist, c2_mean)
 
 ---
 class: inverse, center, middle
+
+![](https://media.giphy.com/media/NhmsYsjPq5ZKg/giphy.gif)  
+
+
 # Wanna play?
 
 [https://stirlingcodingclub.github.io/Base-R/Base-R-practice.html](https://stirlingcodingclub.github.io/Base-R/Base-R-practice.html)  
